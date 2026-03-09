@@ -1,0 +1,24 @@
+{
+  "name": "@hexlet/code",
+  "version": "1.0.0",
+  "description": "[![Actions Status](https://github.com/IamIvanVl/backend-project-4/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/IamIvanVl/backend-project-4/actions)",
+  "homepage": "https://github.com/IamIvanVl/backend-project-4#readme",
+  "bugs": {
+    "url": "https://github.com/IamIvanVl/backend-project-4/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IamIvanVl/backend-project-4.git"
+  },
+  "license": "ISC",
+  "author": "Ivan Vlasenko",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "@stylistic/eslint-plugin": "^5.10.0",
+    "eslint": "^10.0.3"
+  }
+}
