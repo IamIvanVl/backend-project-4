@@ -1,12 +1,14 @@
 import axios from 'axios'
 
-const func = async (url) => {
+export default async (url) => {
     return  axios
     .get(url, {  responseType: 'text', })
-    .then(response => console.log(response.data))
+    .then(response => {
+      return response.data
+    })
     .catch((e) => {
       console.log(`Downloading HTML went wrong: ${e}`)
   })
 }
 
-await func('https://ru.hexlet.io/courses')
+
