@@ -7,4 +7,7 @@ program
   .description('Downloads a page from the internet')
   .version('1.0.0')
   .option('-o, --output [path]', 'output path', `${process.cwd()}`)
-  .argument('<>')
+  .argument('<url>')
+  .action()
+
+program.parse()

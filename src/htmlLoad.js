@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-export default async (url) => {
+export default (url) => {
     return  axios
     .get(url, {  responseType: 'text', })
     .then(response => {
