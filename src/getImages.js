@@ -3,8 +3,12 @@ import fsp from 'fs/promises'
 import path from 'path'
 import axios from 'axios'
 
-export default async (pathToHtml, baseUrl) => {
+export default async (pathToHtml, baseUrl, outputDirName) => {
   const html = await fsp.readFile(pathToHtml, 'utf-8')
+
+  const dirForImages = `./${outputDirName}`
+  await fsp.mkdir(dirForImages)
+  
 
   const $ = cheerio.load(html)
 
@@ -25,8 +29,9 @@ export default async (pathToHtml, baseUrl) => {
       axios.get(absoluteUrl, { responseType: 'arraybuffer' })
         .then((response) => {
           const fileName = path.basename(new URL(absoluteUrl).pathname)
+          const filePath = path.join(dirForImages, fileName)
 
-          return fsp.writeFile(fileName, response.data)
+          return fsp.writeFile(filePath, response.data)
         })
     )
   })

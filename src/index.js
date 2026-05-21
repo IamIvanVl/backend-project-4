@@ -10,8 +10,8 @@ export const func = (url, outputDir) => {
       return htmlSave(html, outputDir, generateName(url))
     })
     .then((pathToHtml) => {
-      return getImages(pathToHtml, baseUrl)
+      return getImages(pathToHtml, baseUrl, generateName(url, 'dir'))
     })
 }
 
-func('https://ru.hexlet.io/projects/4/members/50046', '/f')
+func('https://daniel-ivanov.ru/', './f')
