@@ -3,41 +3,35 @@ import fsp from 'fs/promises'
 import path from 'path'
 import axios from 'axios'
 
-export default async (pathToHtml, baseUrl, outputDirName) => {
-  const html = await fsp.readFile(pathToHtml, 'utf-8')
-
-  const dirForImages = `./${outputDirName}`
-  await fsp.mkdir(dirForImages)
-  
-
+export default async (htmlPath, baseUrl, outputDir) => {
+  const html = await fsp.readFile(htmlPath, 'utf8')
   const $ = cheerio.load(html)
 
-  const images = $('img')
+  await fsp.mkdir(outputDir, { recursive: true })
 
-  const promises = []
+  const promises = $('img')
+    .toArray()
+    .map(async (img) => {
+      const src = $(img).attr('src')
 
-  images.each((i, img) => {
-    const src = $(img).attr('src')
+      if (!src) {
+        return
+      }
 
-    if (!src) {
-      return
-    }
+      const url = new URL(src, baseUrl)
+      const fileName = path.basename(url.pathname)
 
-    const absoluteUrl = new URL(src, baseUrl).href
+      const { data } = await axios.get(url.href, {
+        responseType: 'arraybuffer',
+      })
 
-    promises.push(
-      axios.get(absoluteUrl, { responseType: 'arraybuffer' })
-        .then((response) => {
-          const fileName = path.basename(new URL(absoluteUrl).pathname)
-          const filePath = path.join(dirForImages, fileName)
-
-          return fsp.writeFile(filePath, response.data)
-        })
-    )
-  })
+      await fsp.writeFile(
+        path.join(outputDir, fileName),
+        data,
+      )
+    })
 
   await Promise.all(promises)
 }
-
 
 
