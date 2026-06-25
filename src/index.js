@@ -14,4 +14,4 @@ export const func = (url, outputDir) => {
     })
 }
 
-func('https://daniel-ivanov.ru/', './f')
+func('https://vk.com/letteryu', './f')
