@@ -8,10 +8,12 @@ const isLocal = (resourceUrl, baseUrl) => {
   const baseHost = new URL(baseUrl).hostname
 
   return (
-    resourceHost === baseHost ||
-    resourceHost.endsWith(`.${baseHost}`)
+    resourceHost === baseHost
+    || resourceHost.endsWith(`.${baseHost}`)
   )
 }
+
+const updateLinks = ($, htmlPath) => fsp.writeFile(htmlPath, $.html())
 
 export default (htmlPath, baseUrl, outputDir) => {
   return fsp.readFile(htmlPath, 'utf-8')
@@ -27,22 +29,17 @@ export default (htmlPath, baseUrl, outputDir) => {
       return fsp.mkdir(outputDir, { recursive: true })
         .then(() => Promise.all(
           resources.map(({ el, attr }) => {
-            const value = $(el).attr(attr)
+            const resourcePath = $(el).attr(attr)
 
-            if (!value) {
-              return Promise.resolve()
+            if (!resourcePath) {
+              return
             }
 
-            const url = new URL(value, baseUrl)
-
-            if (!isLocal(url.href, baseUrl)) {
-              return Promise.resolve()
-            }
-
+            const url = new URL(resourcePath, baseUrl)
             const fileName = path.basename(url.pathname)
 
-            if (!fileName) {
-              return Promise.resolve()
+            if (!isLocal(url.href, baseUrl) || !fileName) {
+              return
             }
 
             const localPath = `${path.basename(outputDir)}/${fileName}`
@@ -59,7 +56,6 @@ export default (htmlPath, baseUrl, outputDir) => {
               })
           }),
         ))
-        .then(() => fsp.writeFile(htmlPath, $.html()))
+        .then(() => updateLinks($, htmlPath))
     })
 }
-

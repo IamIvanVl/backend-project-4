@@ -1,6 +1,5 @@
 import fsp from 'fs/promises'
 import path from 'path'
-import { fileURLToPath } from 'url'
 
 export default (html, dir = process.cwd(), fileName) => {
   const targetDirectory = path.resolve(dir)
@@ -17,4 +16,3 @@ export default (html, dir = process.cwd(), fileName) => {
       throw e
     })
 }
-

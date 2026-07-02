@@ -18,9 +18,11 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@stylistic/eslint-plugin": "^5.10.0",
     "@vitest/coverage-v8": "^4.0.18",
-    "eslint": "^10.0.3",
+    "eslint": "^10.5.0",
+    "globals": "^17.7.0",
     "nock": "^14.0.11",
     "vitest": "^4.0.18"
   },
