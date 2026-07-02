@@ -13,7 +13,40 @@ const isLocal = (resourceUrl, baseUrl) => {
   )
 }
 
-const updateLinks = ($, htmlPath) => fsp.writeFile(htmlPath, $.html())
+const updateLinks = ($, htmlPath) =>
+  fsp.writeFile(htmlPath, $.html())
+
+const downloadAndReplaceResource = ($, el, attr, baseUrl, outputDir) => {
+  const resourcePath = $(el).attr(attr)
+
+  if (!resourcePath) {
+    return Promise.resolve()
+  }
+
+  const url = new URL(resourcePath, baseUrl)
+  const fileName = path.basename(url.pathname)
+
+  if (!isLocal(url.href, baseUrl) || !fileName) {
+    return Promise.resolve()
+  }
+
+  const localPath = `${path.basename(outputDir)}/${fileName}`
+
+  return axios.get(url.href, { responseType: 'arraybuffer' })
+    .then(({ data }) =>
+      fsp.writeFile(path.join(outputDir, fileName), data),
+    )
+    .then(() => {
+      $(el).attr(attr, localPath)
+    })
+}
+
+const processResources = ($, resources, baseUrl, outputDir) =>
+  Promise.all(
+    resources.map(({ el, attr }) =>
+      downloadAndReplaceResource($, el, attr, baseUrl, outputDir),
+    ),
+  )
 
 export default (htmlPath, baseUrl, outputDir) => {
   return fsp.readFile(htmlPath, 'utf-8')
@@ -27,35 +60,7 @@ export default (htmlPath, baseUrl, outputDir) => {
       ]
 
       return fsp.mkdir(outputDir, { recursive: true })
-        .then(() => Promise.all(
-          resources.map(({ el, attr }) => {
-            const resourcePath = $(el).attr(attr)
-
-            if (!resourcePath) {
-              return
-            }
-
-            const url = new URL(resourcePath, baseUrl)
-            const fileName = path.basename(url.pathname)
-
-            if (!isLocal(url.href, baseUrl) || !fileName) {
-              return
-            }
-
-            const localPath = `${path.basename(outputDir)}/${fileName}`
-
-            return axios.get(url.href, {
-              responseType: 'arraybuffer',
-            })
-              .then(({ data }) => fsp.writeFile(
-                path.join(outputDir, fileName),
-                data,
-              ))
-              .then(() => {
-                $(el).attr(attr, localPath)
-              })
-          }),
-        ))
+        .then(() => processResources($, resources, baseUrl, outputDir))
         .then(() => updateLinks($, htmlPath))
     })
 }
