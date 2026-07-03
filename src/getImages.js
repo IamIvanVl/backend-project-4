@@ -3,6 +3,7 @@ import fsp from 'fs/promises'
 import path from 'path'
 import axios from 'axios'
 import generateName from './generateName.js'
+import Listr from 'listr'
 
 const isLocal = (resourceUrl, baseUrl) => {
   const resourceHost = new URL(resourceUrl, baseUrl).hostname
@@ -42,12 +43,22 @@ const downloadAndReplaceResource = ($, el, attr, baseUrl, outputDir) => {
     })
 }
 
-const processResources = ($, resources, baseUrl, outputDir) =>
-  Promise.all(
-    resources.map(({ el, attr }) =>
-      downloadAndReplaceResource($, el, attr, baseUrl, outputDir),
-    ),
-  )
+const processResources = ($, resources, baseUrl, outputDir) => {
+  const tasks = resources.map(({ el, attr }) => {
+    const resourcePath = $(el).attr(attr)
+
+    return {
+      title: resourcePath || 'skip',
+      skip: () => !resourcePath,
+      task: () =>
+        downloadAndReplaceResource($, el, attr, baseUrl, outputDir),
+    }
+  })
+
+  const listr = new Listr(tasks, { concurrent: true })
+
+  return listr.run()
+}
 
 export default (htmlPath, baseUrl, outputDir) => {
   return fsp.readFile(htmlPath, 'utf-8')
