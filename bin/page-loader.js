@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { program } from 'commander'
 import process from 'process'
-import pageLoader from '../index.js' // или твоя точка входа
+import pageLoader from '../index.js'
 
 program
   .name('page-loader')
