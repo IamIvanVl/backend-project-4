@@ -3,7 +3,7 @@ import htmlSave from './src/htmlSave.js'
 import generateName from './src/generateName.js'
 import getImages from './src/getImages.js'
 
-export const func = (url, outputDir) => {
+export default (url, outputDir) => {
   const baseUrl = new URL(url).origin
   return htmlLoad(url)
     .then((html) => {
@@ -13,5 +13,3 @@ export const func = (url, outputDir) => {
       return getImages(pathToHtml, baseUrl, generateName(url, 'dir'))
     })
 }
-
-func('https://vk.com/letteryu', './f')
