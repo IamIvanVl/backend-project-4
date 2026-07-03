@@ -2,6 +2,7 @@ import * as cheerio from 'cheerio'
 import fsp from 'fs/promises'
 import path from 'path'
 import axios from 'axios'
+import generateName from './generateName.js'
 
 const isLocal = (resourceUrl, baseUrl) => {
   const resourceHost = new URL(resourceUrl, baseUrl).hostname
@@ -24,7 +25,7 @@ const downloadAndReplaceResource = ($, el, attr, baseUrl, outputDir) => {
   }
 
   const url = new URL(resourcePath, baseUrl)
-  const fileName = path.basename(url.pathname)
+  const fileName = generateName(url.href, 'resource')
 
   if (!isLocal(url.href, baseUrl) || !fileName) {
     return Promise.resolve()
